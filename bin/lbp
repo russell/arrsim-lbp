@@ -1,0 +1,91 @@
+#!/usr/bin/sbcl --script
+                                        ; -*- mode: Lisp;-*-
+
+(defparameter *dev-null*
+  #-lispm
+  (make-two-way-stream (make-concatenated-stream) (make-broadcast-stream))
+  ;; Since Lisp Machines have a built-in /dev/null which handles
+  ;; additional, non-standard operations, we'll use that instead.
+  #+lispm #'system:null-stream)
+
+(sb-ext:enable-debugger)
+(sb-ext:restrict-compiler-policy 'debug 3)
+
+#-:asdf
+(load (merge-pathnames ".quicklisp/asdf.lisp" (user-homedir-pathname)))
+#-quicklisp
+(let ((*standard-output* *dev-null*)
+      (*error-output* *dev-null*))
+  (load (merge-pathnames ".quicklisp/asdf.lisp" (user-homedir-pathname)))
+  (let ((quicklisp-init (merge-pathnames ".quicklisp/setup.lisp"
+                                         (user-homedir-pathname))))
+    (when (probe-file quicklisp-init)
+      (load quicklisp-init))))
+
+(asdf:initialize-source-registry)
+
+(let ((*standard-output* *dev-null*)
+      (*error-output* *dev-null*))
+  (eval '(ql:quickload 'unix-options))
+  (eval '(ql:quickload 'arrsim-lbp)))
+
+
+(defmacro print-error (control-string &rest format-arguments)
+  `(format *error-output* ,control-string ,@format-arguments))
+
+
+(use-package 'arrsim-lbp)
+(use-package 'unix-options)
+
+(defun command-push ()
+  (with-cli-options ()
+    (help)
+    (when help
+      (print-usage)
+      (sb-ext:quit :unix-status 1))
+    (push-all)))
+
+(defun command-buildpackage ()
+  (with-cli-options ()
+    (help)
+    (when help
+      (print-usage)
+      (sb-ext:quit :unix-status 1))
+    (buildpackage)))
+
+(defun command-merge-tag ()
+  (with-cli-options ()
+    (help recent)
+    (when help
+      (print-usage)
+      (sb-ext:quit :unix-status 1))
+    (let ((tag (if recent
+                   (git-recent-tag "origin/master")
+                   (cdr free)))
+          (current-version (get-current-version)))
+      (if (and tag
+               (compare-versions tag current-version :operator ">"))
+          (git-merge-tag tag)
+          (print-error "Version ~A is older then current deb version ~A.~%" tag current-version)))))
+
+(defun command-publish ()
+  (with-cli-options ()
+    (help)
+    (when help
+      (print-usage)
+      (sb-ext:quit :unix-status 1))
+    (let ((free (cdr free)))            ; remove the command from the list
+      (publish (car free)))))
+
+(let ((primary-command (cadr sb-ext:*posix-argv*)))
+  (cond
+    ((equal primary-command "push")
+     (command-push))
+    ((equal primary-command "build")
+     (command-buildpackage))
+    ((equal primary-command "merge-tag")
+     (command-merge-tag))
+    ((equal primary-command "publish")
+     (command-publish))
+    (t
+     (print-error "Invalid Command.~%"))))
