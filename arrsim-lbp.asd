@@ -1,7 +1,7 @@
 ;;; -*- Lisp -*-
 
 (defsystem :arrsim-lbp
-  :depends-on (:asdf :inferior-shell)
+  :depends-on (:asdf :inferior-shell :cl-openstack)
   :description "Debian package management scripts"
   :components
   ((:file "package")
