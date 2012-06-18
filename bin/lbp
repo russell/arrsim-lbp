@@ -65,7 +65,9 @@
           (current-version (get-current-version)))
       (if (and tag
                (compare-versions tag current-version :operator ">"))
-          (git-merge-tag tag)
+          (progn
+            (print-error "Merging version ~A.~%" tag)
+            (git-merge-tag tag))
           (print-error "Version ~A is older then current deb version ~A.~%" tag current-version)))))
 
 (defun command-publish ()
