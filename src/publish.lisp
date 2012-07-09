@@ -19,7 +19,7 @@
 (in-package :arrsim-lbp)
 
 ;; ../build-area/rcportal_2.1.5-1_amd64.changes
-(defparameter *build-area* "../build-area/")
+(defparameter *build-area* "/home/russell/projects/packaging/build-area/")
 
 (defun publish (&optional changes)
   "merge a new version into the upstream and changes it"

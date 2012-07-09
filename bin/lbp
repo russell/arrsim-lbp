@@ -30,6 +30,9 @@
   (eval '(ql:quickload 'arrsim-lbp)))
 
 
+(defmacro printf (control-string &rest format-arguments)
+  `(format *standard-output* ,control-string ,@format-arguments))
+
 (defmacro print-error (control-string &rest format-arguments)
   `(format *error-output* ,control-string ,@format-arguments))
 
@@ -53,6 +56,16 @@
       (sb-ext:quit :unix-status 1))
     (buildpackage)))
 
+(defun command-info ()
+  (with-cli-options ()
+    (help)
+    (when help
+      (print-usage)
+      (sb-ext:quit :unix-status 1))
+    (printf "Debian Branch: ~A~%" (car (get-debian)))
+    (printf "Upstream Branch: ~A~%" (car (get-upstream)))
+    (printf "Current Version ~A~%" (get-current-version))))
+
 (defun command-merge-tag ()
   (with-cli-options ()
     (help recent)
@@ -70,6 +83,18 @@
             (git-merge-tag tag))
           (print-error "Version ~A is older then current deb version ~A.~%" tag current-version)))))
 
+(defun command-merge-branch ()
+  (with-cli-options ()
+    (help auto)
+    (when help
+      (print-usage)
+      (sb-ext:quit :unix-status 1))
+    (let ((branch (cdr free)))
+      (let ((debian-version (git-merge-branch branch)))
+        (if auto
+            (git-commit-version)
+            (princ "Please update debian/changelog.~%"))))))
+
 (defun command-publish ()
   (with-cli-options ()
     (help)
@@ -79,15 +104,32 @@
     (let ((free (cdr free)))            ; remove the command from the list
       (publish (car free)))))
 
+(defun command-dch ()
+  (with-cli-options ()
+    (help increment auto)
+    (when help
+      (print-usage)
+      (sb-ext:quit :unix-status 1))
+    (increment-revision)
+    (if auto
+        (git-commit-version)
+        (princ "Please update debian/changelog.~%"))))
+
 (let ((primary-command (cadr sb-ext:*posix-argv*)))
   (cond
     ((equal primary-command "push")
      (command-push))
     ((equal primary-command "build")
      (command-buildpackage))
+    ((equal primary-command "info")
+     (command-info))
     ((equal primary-command "merge-tag")
      (command-merge-tag))
+    ((equal primary-command "merge-branch")
+     (command-merge-branch))
     ((equal primary-command "publish")
      (command-publish))
+    ((equal primary-command "dch")
+     (command-dch))
     (t
      (print-error "Invalid Command.~%"))))

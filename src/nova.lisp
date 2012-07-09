@@ -18,5 +18,14 @@
 
 (in-package :arrsim-lbp)
 
-(defun create-packaging-host ()
-  (server-create))
+(defparameter *os-flavor* "0")
+(defparameter *os-image* "d5a4b467-de5e-4042-8ad0-86478c205e01")
+
+;; http://superuser.com/questions/161973/how-can-i-forward-a-gpg-key-via-ssh-agent
+
+(defun create-packaging-host (package &optional (image *os-image*))
+  (let ((name (string-concat "ps-" package))
+        (user-data (merge-pathnames
+                    (make-pathname :name "cloud-config" :type "yml")
+                    (component-pathname (component-system (find-system :arrsim-lbp))))))
+    (create-server name image *os-flavor* :user-data user-data)))

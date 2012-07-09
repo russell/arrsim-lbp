@@ -25,8 +25,12 @@
   (:use :cl :inferior-shell)
 
   (:import-from #:cl-openstack
-                #:server-create
-                #:server-list)
+                #:create-server
+                #:list-servers)
+  (:import-from #:asdf
+                #:component-pathname
+                #:component-system
+                #:find-system)
 
   (:export
    ;; Deb
@@ -34,13 +38,18 @@
    #:get-upstream
    #:get-debian
    #:get-current-version
+   #:increment-revision
 
    ;; Dpkg
    #:compare-versions
 
    ;; Git
    #:git-recent-tag
+   #:git-new-version
+   #:git-commit-version
+   #:git-commit-all
 
    #:publish
    #:buildpackage
-   #:git-merge-tag))
+   #:git-merge-tag
+   #:git-merge-branch))

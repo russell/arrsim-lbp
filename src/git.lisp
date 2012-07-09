@@ -19,7 +19,27 @@
 (in-package :arrsim-lbp)
 
 (defun git-recent-tag (&optional branch)
+  "get the most recent tag on the specified branch"
   (car
    (if branch
        (run/lines (concat '(git "describe" "--abbrev=0" :tags) (list branch)))
        (run/lines '(git "describe" "--abbrev=0" :tags)))))
+
+(defun git-latest-commit-date (&optional (branch "origin/master"))
+  "get the latest commit date"
+  (cl-ppcre:register-groups-bind (year month day hour minute second timezone)
+      ("^CommitDate: (\\d*)-(\\d*)-(\\d*) (\\d*):(\\d*):(\\d*) (.*)$"
+       (car (run/lines `(pipe (git "log" "-n" "1" "--pretty=fuller" "--date=iso" ,branch)
+                              (grep "CommitDate:")) :show t))
+       :sharedp t)
+    (list :year year :month month :day day
+          :hour hour  :minute minute :second second
+          :timezone timezone)))
+
+(defun git-create-version-number (&key (branch "origin/master") (local-version ""))
+  "generate a version number based on the latest tag and the commit date"
+  (let ((commit-date (git-latest-commit-date branch))
+        (latest-tag (git-recent-tag branch)))
+    (concatenate 'string latest-tag "+" (getf commit-date :year)
+                 (getf commit-date :month) (getf commit-date :day)
+                 local-version)))

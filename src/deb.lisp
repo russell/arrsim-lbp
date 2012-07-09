@@ -14,7 +14,7 @@
   (apply 'concatenate 'list lists))
 
 (defun get-release ()
-  (let ((branch (run/ss "git branch --no-color 2> /dev/null | sed -e '/^[^*]/d' -e 's/* \\(.*\\)/\\1/'" :show t))
+  (let ((branch (run/ss "git branch --no-color 2> /dev/null | sed -e '/^[^*]/d' -e 's/* \\(.*\\)/\\1/'"))
         (changelog-dist (remove "UNRELEASED" (run/lines "dpkg-parsechangelog -c2 | sed -n 's/^ .* (.*) \\(.*\\); .*$/\\1/p'" :show t) :test #'equal)))
     (cond
       ((search "/" branch)
@@ -28,7 +28,7 @@
            (eq (search "upstream" item) 0))
          (current-dist-p (item)
            (search dist item)))
-  (let* ((branches (remove-if-not #'upstream-p (run/lines "git branch --no-color 2> /dev/null | cut -c 3-" :show t)))
+  (let* ((branches (remove-if-not #'upstream-p (run/lines "git branch --no-color 2> /dev/null | cut -c 3-")))
          (current-dist (remove-if-not #'current-dist-p branches)))
     (cond
       (current-dist current-dist)
@@ -39,7 +39,7 @@
            (eq (search "debian" item) 0))
          (current-dist-p (item)
            (search dist item)))
-  (let* ((branches (remove-if-not #'debian-p (run/lines "git branch --no-color 2> /dev/null | cut -c 3-" :show t)))
+  (let* ((branches (remove-if-not #'debian-p (run/lines "git branch --no-color 2> /dev/null | cut -c 3-")))
          (current-dist (remove-if-not #'current-dist-p branches)))
     (cond
       (current-dist current-dist)
@@ -68,3 +68,9 @@
                                 :wait t :search t :input t :output t))
            0)
       t))
+
+(defun increment-revision ()
+  (let ((version (cl-ppcre:register-groups-bind (version revision)
+                     ("^(.*[^\\d])(\\d*)$" (get-current-version))
+                   (concatenate 'string version (write-to-string (1+ (parse-integer revision)))))))
+    (git-new-version version)))
