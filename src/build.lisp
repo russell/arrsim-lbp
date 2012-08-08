@@ -44,7 +44,7 @@
     (run (list 'git 'merge ref) :show t)
     (run (list 'git 'tag (string-concat "upstream/" upstream-version)) :show t)
     (run (list 'git 'checkout debian-branch) :show t)
-    (run (list 'git 'merge upstream-branch) :show t)
+    (run (list 'git 'merge :no-edit upstream-branch) :show t)
     (git-new-version debian-version)))
 
 (defun git-merge-tag (tag)
@@ -52,6 +52,7 @@
   (if (equal (car (run/lines (concat '(git tag "-l") (list tag)) :show t)) tag)
       (progn
         (git-merge-revision tag tag (string-concat tag "-1"))
+        (run (list 'dch "-r" "Released new version."))
         (princ "Please update debian/changelog.~%"))))
 
 
@@ -64,6 +65,7 @@
         (progn
           (print-error "Merging version ~A.~%" branch)
           (git-merge-revision branch latest-version debian-version)
+          (run (list 'dch "-r" "Released new version."))
           debian-version)
         (print-error "Version ~A is older then current deb version ~A.~%" latest-version current-version))))
 
