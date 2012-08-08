@@ -8,7 +8,7 @@
   ;; additional, non-standard operations, we'll use that instead.
   #+lispm #'system:null-stream)
 
-(sb-ext:enable-debugger)
+;;(sb-ext:enable-debugger)
 (sb-ext:restrict-compiler-policy 'debug 3)
 
 #-:asdf
@@ -74,7 +74,7 @@
       (sb-ext:quit :unix-status 1))
     (let ((tag (if recent
                    (git-recent-tag "origin/master")
-                   (cdr free)))
+                   (cadr free)))
           (current-version (get-current-version)))
       (if (and tag
                (compare-versions tag current-version :operator ">"))
@@ -93,7 +93,7 @@
       (let ((debian-version (git-merge-branch branch)))
         (if auto
             (git-commit-version)
-            (princ "Please update debian/changelog.~%"))))))
+            (print-error "Please update debian/changelog.~%"))))))
 
 (defun command-publish ()
   (with-cli-options ()
