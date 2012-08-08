@@ -18,12 +18,13 @@
 
 (in-package :arrsim-lbp)
 
-(defun git-recent-tag (&optional branch)
+(defun git-recent-tag (&optional (branch "origin/master"))
   "get the most recent tag on the specified branch"
-  (car
-   (if branch
-       (run/lines (concat '(git "describe" "--abbrev=0" :tags) (list branch)))
-       (run/lines '(git "describe" "--abbrev=0" :tags)))))
+  (cl-ppcre:register-groups-bind (tag number rev)
+      ("^(.+)-(\\d+)-(.+)$"
+       (car (run/lines `(git "describe" ,branch) :show t))
+       :sharedp t)
+    tag))
 
 (defun git-latest-commit-date (&optional (branch "origin/master"))
   "get the latest commit date"
