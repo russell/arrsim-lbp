@@ -1,0 +1,27 @@
+* Lets Build Packages
+
+  This is an abstraction over git-bulidpackage and other Debian
+  packaging tools in an attempt to create an automated.
+
+** Usage
+
+*** merge-tag
+
+    Merge tag will take the supplied tag and merge it into the
+    upstream branch.  It will then merge the upstream branch into the
+    Debian branch, a changelog will then be generated.  If run with
+    the -a flag then the changelog will be commited and taged.
+
+* Development
+** Interactive
+
+   To change the current working directory of an existing SLIME
+   session.
+#+BEGIN_SRC lisp
+(sb-posix:chdir "/home/russell/projects/packaging/rcportal/")
+(sb-posix:setenv "PWD" "/home/russell/projects/packaging/rcportal/" 1)
+(setf *default-pathname-defaults* #P"/home/russell/projects/packaging/rcportal/")
+
+; to test try getting the true name
+(truename ".")
+#+END_SRC

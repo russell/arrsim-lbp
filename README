@@ -1,9 +1,0 @@
-* Lets Build Packages
-
-This is an abstraction over git-bulidpackage and other debian packaging tools. 
-
-(sb-posix:chdir "/home/russell/projects/packaging/rcportal/")
-(sb-posix:setenv "PWD" "/home/russell/projects/packaging/rcportal/" 1)
-(setf *default-pathname-defaults* #P"/home/russell/projects/packaging/rcportal/")
-
-(truename ".")
