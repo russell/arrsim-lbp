@@ -18,7 +18,7 @@
 
 
 (defsystem :arrsim-lbp
-  :depends-on (:asdf :inferior-shell :cl-openstack :cl-ppcre)
+  :depends-on (:asdf :inferior-shell :cl-openstack :cl-ppcre :unix-options)
   :description "Debian package management scripts"
   :components ((:static-file "arrsim-lbp.asd")
                (:module "src"
@@ -29,4 +29,13 @@
                  (:file "build" :depends-on ("package" "deb"))
                  (:file "git" :depends-on ("package"))
                  (:file "nova" :depends-on ("package"))
-                 (:file "publish" :depends-on ("package" "deb"))))))
+                 (:file "publish" :depends-on ("package" "deb"))
+                 (:module "commands"
+                  :depends-on ("package" "util")
+                  :components ((:file "push")
+                               (:file "merge-tag")
+                               (:file "build")
+                               (:file "info")
+                               (:file "merge-branch")
+                               (:file "publish")
+                               (:file "dch")))))))

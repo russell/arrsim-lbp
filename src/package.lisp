@@ -27,12 +27,26 @@
   (:import-from #:cl-openstack
                 #:create-server
                 #:list-servers)
+
   (:import-from #:asdf
                 #:component-pathname
                 #:component-system
                 #:find-system)
 
+  (:import-from #:unix-options
+                #:with-cli-options
+                #:print-usage-summary)
+
   (:export
+   ;; CLI Interface
+   #:command-push
+   #:command-merge-tag
+   #:command-merge-branch
+   #:command-info
+   #:command-bulid
+   #:command-publish
+   #:command-dch
+
    ;; Deb
    #:get-release
    #:get-upstream
