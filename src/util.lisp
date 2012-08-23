@@ -16,17 +16,11 @@
 ;; You should have received a copy of the GNU General Public License
 ;; along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+(in-package :arrsim-lbp)
 
-(defsystem :arrsim-lbp
-  :depends-on (:asdf :inferior-shell :cl-openstack :cl-ppcre)
-  :description "Debian package management scripts"
-  :components ((:static-file "arrsim-lbp.asd")
-               (:module "src"
-                :components
-                ((:file "package")
-                 (:file "util" :depends-on ("package"))
-                 (:file "deb" :depends-on ("package"))
-                 (:file "build" :depends-on ("package" "deb"))
-                 (:file "git" :depends-on ("package"))
-                 (:file "nova" :depends-on ("package"))
-                 (:file "publish" :depends-on ("package" "deb"))))))
+
+(defmacro printf (control-string &rest format-arguments)
+  `(format *standard-output* ,control-string ,@format-arguments))
+
+(defmacro print-error (control-string &rest format-arguments)
+  `(format *error-output* ,control-string ,@format-arguments))
