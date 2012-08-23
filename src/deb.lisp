@@ -14,6 +14,8 @@
   (apply 'concatenate 'list lists))
 
 (defun get-release ()
+  "Get the current target distribution from the changelog.  If the
+current version is UNRELEASED then net released version will be returned."
   (let ((branch (run/ss "git branch --no-color 2> /dev/null | sed -e '/^[^*]/d' -e 's/* \\(.*\\)/\\1/'"))
         (changelog-dist (remove "UNRELEASED" (run/lines "dpkg-parsechangelog -c2 | sed -n 's/^ .* (.*) \\(.*\\); .*$/\\1/p'" :show t) :test #'equal)))
     (cond
@@ -24,6 +26,8 @@
       (t "unstable"))))
 
 (defun get-upstream (&optional dist)
+  "Return the upstream branch based on a distribution.  This will look
+for a branch with the name upstream/$distribution."
   (flet ((upstream-p (item)
            (eq (search "upstream" item) 0))
          (current-dist-p (item)
@@ -35,6 +39,8 @@
       (t branches)))))
 
 (defun get-debian (&optional dist)
+  "Return the Debian branch based on a distribution.  This will look
+for a branch with the name debian/$distribution."
   (flet ((debian-p (item)
            (eq (search "debian" item) 0))
          (current-dist-p (item)
@@ -60,7 +66,8 @@
     (cdr (assoc :source changelog))))
 
 (defun compare-versions (ver1 ver2 &key (operator "="))
-  "compare VER1 with VER2. possible operators are < << <= = >= >> >"
+  "Compare VER1 with VER2 using dpkg.  Possible operators are < << <=
+= >= >> >."
   (when (= (sb-ext:process-exit-code
             (sb-ext:run-program "dpkg"
                                 (list "--compare-versions"
@@ -70,6 +77,8 @@
       t))
 
 (defun increment-revision ()
+  "Get the current version from the changelog and increment the
+release number."
   (let ((version (cl-ppcre:register-groups-bind (version revision)
                      ("^(.*[^\\d])(\\d*)$" (get-current-version))
                    (concatenate 'string version (write-to-string (1+ (parse-integer revision)))))))

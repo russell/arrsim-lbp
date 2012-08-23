@@ -31,7 +31,7 @@
     (run (list 'dch :distribution  *distribution* "") :show t)))
 
 (defun git-commit-version ()
-  "create a new release commit and tag the current commit."
+  "Create a new release commit and tag the current commit."
   (let* ((debian-version (get-current-version)))
     (git-commit-all (with-output-to-string (string) (format string "Released version ~A." debian-version)))
     (run (list 'git 'tag (string-concat "debian/" debian-version)) :show t)))
