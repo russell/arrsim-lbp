@@ -19,9 +19,11 @@
 
 (in-package :arrsim-lbp)
 
-(defun command-merge-branch ()
+(defcommand merge-branch
+    "Merge a branch with the current Debian version and generate a new
+changelog entry."
   (with-cli-options ()
-    (help auto)
+                    (help auto)
     (when help
       (print-usage-summary "Usage:~%~@{~A~%~}"
                            '(((#\a "auto") nil "After merging, commit and tag.")

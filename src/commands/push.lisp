@@ -23,7 +23,8 @@
   (run (list 'git :push))
   (run (list 'git 'push :tags)))
 
-(defun command-push ()
+(defcommand push
+    "Push all branches and tags to remote git repository."
   (with-cli-options ()
     (help)
     (when help

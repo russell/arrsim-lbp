@@ -42,33 +42,9 @@
 (asdf:initialize-source-registry)
 
 (let ((*standard-output* *dev-null*)
-      (*error-output* *dev-null*)))
-(eval '(ql:quickload 'unix-options))
+      (*error-output* *dev-null*))
+  )
 (eval '(ql:quickload 'arrsim-lbp))
-
-
-(defmacro print-error (control-string &rest format-arguments)
-  `(format *error-output* ,control-string ,@format-arguments))
-
-
 (use-package 'arrsim-lbp)
-(use-package 'unix-options)
 
-(let ((primary-command (cadr sb-ext:*posix-argv*)))
-  (cond
-    ((equal primary-command "push")
-     (command-push))
-    ((equal primary-command "build")
-     (command-buildpackage))
-    ((equal primary-command "info")
-     (command-info))
-    ((equal primary-command "merge-tag")
-     (command-merge-tag))
-    ((equal primary-command "merge-branch")
-     (command-merge-branch))
-    ((equal primary-command "publish")
-     (command-publish))
-    ((equal primary-command "dch")
-     (command-dch))
-    (t
-     (print-error "Invalid Command.~%"))))
+(arrsim-lbp:main)

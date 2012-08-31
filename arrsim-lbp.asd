@@ -30,6 +30,7 @@
                  (:file "git" :depends-on ("package"))
                  (:file "nova" :depends-on ("package"))
                  (:file "publish" :depends-on ("package" "deb"))
+                 (:file "command" :depends-on ("package"))
                  (:module "commands"
                   :depends-on ("package" "util")
                   :components ((:file "push")
@@ -38,4 +39,7 @@
                                (:file "info")
                                (:file "merge-branch")
                                (:file "publish")
-                               (:file "dch")))))))
+                               (:file "dch")))
+                 (:file "lbp" :depends-on ("package" "util"
+                                                     "command"
+                                                     "commands"))))))

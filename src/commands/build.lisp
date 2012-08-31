@@ -19,7 +19,8 @@
 
 (in-package :arrsim-lbp)
 
-(defun command-buildpackage ()
+(defcommand build
+    "Build a new package using the current version."
   (with-cli-options ()
     (help)
     (when help

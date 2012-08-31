@@ -19,7 +19,8 @@
 
 (in-package :arrsim-lbp)
 
-(defun command-publish ()
+(defcommand publish
+    "Push the current Debian version with dupload."
   (with-cli-options ()
     (help)
     (when help

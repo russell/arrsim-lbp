@@ -39,13 +39,7 @@
 
   (:export
    ;; CLI Interface
-   #:command-push
-   #:command-merge-tag
-   #:command-merge-branch
-   #:command-info
-   #:command-bulid
-   #:command-publish
-   #:command-dch
+   #:main
 
    ;; Deb
    #:get-release

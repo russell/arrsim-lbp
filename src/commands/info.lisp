@@ -19,7 +19,8 @@
 
 (in-package :arrsim-lbp)
 
-(defun command-info ()
+(defcommand info
+    "Print the variables that will be used for the current execution."
   (with-cli-options ()
     (help)
     (when help

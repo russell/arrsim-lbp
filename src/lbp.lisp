@@ -19,17 +19,14 @@
 
 (in-package :arrsim-lbp)
 
-(defcommand dch
-    "Generate changelog or new version."
-  (with-cli-options ()
-                    (help increment auto)
-    (when help
-      (print-usage-summary "Usage:~%~@{~A~%~}"
-                           '(((#\i "increment") nil "Increment the revision.")
-                             ((#\a "auto") nil "After creating new changelog entry, commit and tag.")
-                             ((#\h "help") nil "Print this message.")))
-      (sb-ext:quit :unix-status 1))
-    (increment-revision)
-    (if auto
-        (git-commit-version)
-        (printf "Please update debian/changelog.~%"))))
+(defun main ()
+  (let* ((primary-command (cadr sb-ext:*posix-argv*))
+         (command (find primary-command *commands*
+                        :key (lambda (i) (string-downcase (symbol-name (car i))))
+                        :test #'equal)))
+    (if command
+        (progn (funcall (caddr command))
+               (print command))
+        (progn
+          (print-error "ERROR: Invalid Command, ~A.~%" primary-command)
+          (print-usage)))))

@@ -19,7 +19,9 @@
 
 (in-package :arrsim-lbp)
 
-(defun command-merge-tag ()
+(defcommand merge-tag
+    "Merge a tag with the current Debian version and generate a new
+changelog entry."
   (with-cli-options ()
     (help recent)
     (when help
