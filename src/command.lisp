@@ -24,16 +24,6 @@
 
 (defvar *default-usage-format-string* "~%~%Commands:~%~@{~A~%~}~%")
 
-(defun exe-name ()
-  "The command used to execute this program"
-  #+:sbcl (first sb-ext:*posix-argv*)
-  #+:ccl (first ccl:*command-line-argument-list*)
-  #+:clisp (first ext:*args*)
-  #+:lispworks (first system:*line-arguments-list*)
-  #+:cmu (first extensions:*command-line-words*)
-  #+:ecl (first (ext:command-args))
-  )
-
 (defmacro defcommand (command documentation &body body)
   `(let ((com (list (quote ,command)
                     ,documentation
@@ -84,6 +74,6 @@
 (defun print-usage ()
   (print-command-summary
    (concatenate 'string "Usage: "
-                (exe-name)
+                "lbp"
                 " <command> [OPTIONS]..."
                 *default-usage-format-string*)))
