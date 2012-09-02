@@ -43,8 +43,8 @@
 
 (let ((*standard-output* *dev-null*)
       (*error-output* *dev-null*))
-  )
-(eval '(ql:quickload 'arrsim-lbp))
+  (eval '(ql:quickload 'arrsim-lbp)))
+
 (use-package 'arrsim-lbp)
 
 (arrsim-lbp:main)
