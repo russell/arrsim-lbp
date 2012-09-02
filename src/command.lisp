@@ -53,32 +53,32 @@
 
 (defun greatest (list &optional (test #'>))
   (reduce (lambda (x y)
-	    (greater x y test))
-	  list))
+            (greater x y test))
+          list))
 
 (defun print-command-summary (description)
   (let* ((max-spec-length (greatest (mapcar
                                      (lambda (c) (length (symbol-name (car c))))
                                      *commands*))))
     (format t "~?" description (mapcar (lambda (spec)
-              (command-spec-to-string spec max-spec-length))
-            *commands*))))
+                                         (command-spec-to-string spec max-spec-length))
+                                       *commands*))))
 
 (defun split-string (string)
-    (loop :for i = 0 :then (1+ j)
-          :as positions = (remove-if (lambda (l) (eq nil l))
-                                     (list (position #\Space string :start i)
-                                           (position #\Newline string :start i)))
-          :as j = (when positions (apply 'min positions))
-          :collect (subseq string i j)
-          :while j))
+  (loop :for i = 0 :then (1+ j)
+        :as positions = (remove-if (lambda (l) (eq nil l))
+                                   (list (position #\Space string :start i)
+                                         (position #\Newline string :start i)))
+        :as j = (when positions (apply 'min positions))
+        :collect (subseq string i j)
+        :while j))
 
 (defun command-spec-to-string (command &optional (desc-offset 50))
   (format nil (format nil "  ~A~~~A,2T~<~@{~A~^ ~:_~}~:>"
-		      "~A"
-		      (+ desc-offset 4)
-		      (split-string (cadr command)))
-           (string-downcase (symbol-name (car command)))))
+                      "~A"
+                      (+ desc-offset 4)
+                      (split-string (cadr command)))
+          (string-downcase (symbol-name (car command)))))
 
 (defun print-usage ()
   (print-command-summary
