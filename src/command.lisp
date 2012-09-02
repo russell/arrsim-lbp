@@ -74,11 +74,12 @@
         :while j))
 
 (defun command-spec-to-string (command &optional (desc-offset 50))
-  (format nil (format nil "  ~A~~~A,2T~<~@{~A~^ ~:_~}~:>"
+  (format nil (format nil "  ~A~~~A,2T~A"
                       "~A"
                       (+ desc-offset 4)
-                      (split-string (cadr command)))
-          (string-downcase (symbol-name (car command)))))
+                      "~<~@{~A~^ ~:_~}~:>")
+          (string-downcase (symbol-name (car command)))
+          (split-string (cadr command))))
 
 (defun print-usage ()
   (print-command-summary
