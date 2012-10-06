@@ -32,7 +32,7 @@
                  (:file "publish" :depends-on ("package" "deb"))
                  (:file "command" :depends-on ("package"))
                  (:module "commands"
-                  :depends-on ("package" "util")
+                  :depends-on ("package" "util" "command")
                   :components ((:file "push")
                                (:file "merge-tag")
                                (:file "build")
