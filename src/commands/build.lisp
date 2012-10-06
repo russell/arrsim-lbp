@@ -27,4 +27,5 @@
       (print-usage-summary "Usage:~%~@{~A~%~}"
                            '(((#\h "help") nil "Print this message.")))
       (exit 1))
+    (git-repository-dirty)
     (buildpackage)))

@@ -33,6 +33,7 @@ changelog entry."
                    (git-recent-tag "origin/master")
                    (cadr free)))
           (current-version (get-current-version)))
+      (git-repository-dirty)
       (if (and tag
                (compare-versions tag current-version :operator ">"))
           (progn

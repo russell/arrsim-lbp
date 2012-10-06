@@ -31,6 +31,7 @@ changelog entry."
       (exit 1))
     (let ((branch (cdr free)))
       (let ((debian-version (git-merge-branch branch)))
+        (git-repository-dirty)
         (if auto
             (git-commit-version)
             (print-error "Please update debian/changelog.~%"))))))
