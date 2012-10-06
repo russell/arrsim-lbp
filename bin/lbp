@@ -28,12 +28,9 @@
 ;;(sb-ext:enable-debugger)
 (sb-ext:restrict-compiler-policy 'debug 3)
 
-#-:asdf
-(load (merge-pathnames ".quicklisp/asdf.lisp" (user-homedir-pathname)))
 #-quicklisp
 (let ((*standard-output* *dev-null*)
       (*error-output* *dev-null*))
-  (load (merge-pathnames ".quicklisp/asdf.lisp" (user-homedir-pathname)))
   (let ((quicklisp-init (merge-pathnames ".quicklisp/setup.lisp"
                                          (user-homedir-pathname))))
     (when (probe-file quicklisp-init)
