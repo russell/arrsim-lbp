@@ -18,6 +18,17 @@
 ;; along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 
+;; Taken from unix-options library.
+(defun cli-options ()
+  "list of tokens passed in at the cli"
+  #+:sbcl (rest sb-ext:*posix-argv*)
+  #+:ccl (rest ccl:*command-line-argument-list*)
+  #+:clisp (rest ext:*args*)
+  #+:lispworks (rest system:*line-arguments-list*)
+  #+:cmu (rest extensions:*command-line-words*)
+  #+:ecl (rest (ext:command-args))
+ )
+
 (defparameter *dev-null*
   #-lispm
   (make-two-way-stream (make-concatenated-stream) (make-broadcast-stream))
@@ -38,9 +49,12 @@
 
 (asdf:initialize-source-registry)
 
-(let ((*standard-output* *dev-null*)
-      (*error-output* *dev-null*))
-  (eval '(ql:quickload 'arrsim-lbp)))
+(if (member "-v" (cli-options) :test #'equal)
+    (eval '(ql:quickload 'arrsim-lbp))
+    (let ((*standard-output* *dev-null*)
+          (*error-output* *dev-null*))
+      (eval '(ql:quickload 'arrsim-lbp))))
+
 
 (use-package 'arrsim-lbp)
 
