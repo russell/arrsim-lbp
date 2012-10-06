@@ -22,13 +22,16 @@
 (defcommand dch
     "Generate changelog or new version."
   (with-cli-options ()
-                    (help increment auto)
+                    (help increment auto verbose)
     (when help
       (print-usage-summary "Usage:~%~@{~A~%~}"
                            '(((#\i "increment") nil "Increment the revision.")
                              ((#\a "auto") nil "After creating new changelog entry, commit and tag.")
+                             ((#\v "verbose") nil "Verbose output.")
                              ((#\h "help") nil "Print this message.")))
       (sb-ext:quit :unix-status 1))
+    (when verbose
+      (setq *show-command-output* t))
     (increment-revision)
     (if auto
         (git-commit-version)

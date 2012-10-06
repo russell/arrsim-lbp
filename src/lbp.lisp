@@ -19,6 +19,9 @@
 
 (in-package :arrsim-lbp)
 
+(defparameter *show-command-output* nil
+  "Print the commands being run to *TRACE-OUTPUT* before execution.")
+
 (defun main ()
   (let* ((primary-command (cadr sb-ext:*posix-argv*))
          (command (find primary-command *commands*

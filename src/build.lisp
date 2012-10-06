@@ -46,29 +46,29 @@
          (debian-branch (car (get-debian dist))))
     (run (list 'git 'dch
                "--debian-branch" debian-branch
-               "-N" version) :show t)
-    (run (list 'dch :distribution  *distribution* "") :show t)))
+               "-N" version) :show *show-command-output*)
+    (run (list 'dch :distribution  *distribution* "") :show *show-command-output*)))
 
 (defun git-commit-version ()
   "Create a new release commit and tag the current commit."
   (let* ((debian-version (get-current-version)))
     (git-commit-all (with-output-to-string (string) (format string "Released version ~A." debian-version)))
-    (run (list 'git 'tag (string-concat "debian/" debian-version)) :show t)))
+    (run (list 'git 'tag (string-concat "debian/" debian-version)) :show *show-command-output*)))
 
 (defun git-merge-revision (ref upstream-version debian-version)
   (let* ((dist (get-release))
          (upstream-branch (car (get-upstream dist)))
          (debian-branch (car (get-debian dist))))
-    (run (list 'git 'checkout upstream-branch) :show t)
-    (run (list 'git 'merge ref) :show t)
-    (run (list 'git 'tag (string-concat "upstream/" upstream-version)) :show t)
-    (run (list 'git 'checkout debian-branch) :show t)
-    (run (list 'git 'merge :no-edit upstream-branch) :show t)
+    (run (list 'git 'checkout upstream-branch) :show *show-command-output*)
+    (run (list 'git 'merge ref) :show *show-command-output*)
+    (run (list 'git 'tag (string-concat "upstream/" upstream-version)) :show *show-command-output*)
+    (run (list 'git 'checkout debian-branch) :show *show-command-output*)
+    (run (list 'git 'merge :no-edit upstream-branch) :show *show-command-output*)
     (git-new-version debian-version)))
 
 (defun git-merge-tag (tag)
   "merge a new version into the upstream and tag it"
-  (if (equal (car (run/lines (concat '(git tag "-l") (list tag)) :show t)) tag)
+  (if (equal (car (run/lines (concat '(git tag "-l") (list tag)) :show *show-command-output*)) tag)
       (progn
         (git-merge-revision tag tag (string-concat tag "-1"))
         (run (list 'dch "-r" "Released new version."))

@@ -22,7 +22,7 @@
   "get the most recent tag on the specified branch"
   (cl-ppcre:register-groups-bind (tag number rev)
       ("^(.+)-(\\d+)-(.+)$"
-       (car (run/lines `(git "describe" ,branch) :show t))
+       (car (run/lines `(git "describe" ,branch) :show *show-command-output*))
        :sharedp t)
     tag))
 
@@ -31,7 +31,7 @@
   (cl-ppcre:register-groups-bind (year month day hour minute second timezone)
       ("^CommitDate: (\\d*)-(\\d*)-(\\d*) (\\d*):(\\d*):(\\d*) (.*)$"
        (car (run/lines `(pipe (git "log" "-n" "1" "--pretty=fuller" "--date=iso" ,branch)
-                              (grep "CommitDate:")) :show t))
+                              (grep "CommitDate:")) :show *show-command-output*))
        :sharedp t)
     (list :year year :month month :day day
           :hour hour  :minute minute :second second
