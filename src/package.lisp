@@ -33,6 +33,9 @@
                 #:component-system
                 #:find-system)
 
+  (:import-from #:trivial-backtrace
+                #:print-backtrace)
+
   (:import-from #:unix-options
                 #:with-cli-options
                 #:free

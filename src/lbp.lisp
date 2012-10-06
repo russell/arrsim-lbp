@@ -23,12 +23,18 @@
   "Print the commands being run to *TRACE-OUTPUT* before execution.")
 
 (defun main ()
-  (let* ((primary-command (cadr sb-ext:*posix-argv*))
-         (command (find primary-command *commands*
-                        :key (lambda (i) (string-downcase (symbol-name (car i))))
-                        :test #'equal)))
-    (if command
-        (progn (funcall (caddr command)))
-        (progn
-          (print-error "ERROR: Invalid Command, ~A.~%" (or primary-command "none"))
-          (print-usage)))))
+  (handler-case
+      (let* ((primary-command (cadr sb-ext:*posix-argv*))
+             (command (find primary-command *commands*
+                            :key (lambda (i) (string-downcase (symbol-name (car i))))
+                            :test #'equal)))
+        (if command
+            (progn (funcall (caddr command)))
+            (progn
+              (print-error "ERROR: Invalid Command, ~A.~%" (or primary-command "none"))
+              (print-usage))))
+    (debian-package-error (err)
+      (print-error "ERROR: ~A~%" (slot-value err 'text)))
+    (t (err)
+      (print-backtrace err :verbose t :output "~/.lbp.log")
+      (exit 2))))
