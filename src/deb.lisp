@@ -19,12 +19,21 @@
 
 (in-package :arrsim-lbp)
 
+(define-condition debian-package-error (error)
+  ((text :initarg :text :reader text)))
+
+(defun get-changelog-distributions (&optional (number 4))
+  (run/lines `(pipe
+               ("dpkg-parsechangelog" ,(string-concat "-c" (write-to-string number)))
+               ("sed" "-n" "s/^ .* (.*) \\(.*\\); .*$/\\1/p"))
+             :show *show-command-output*))
+
 (defun get-release ()
   "Get the current target distribution from the changelog.  If the
 current version is UNRELEASED then next released version will be
 returned."
-  (let ((branch (run/ss "git branch --no-color 2> /dev/null | sed -e '/^[^*]/d' -e 's/* \\(.*\\)/\\1/'"))
-        (changelog-dist (remove "UNRELEASED" (run/lines "dpkg-parsechangelog -c4 | sed -n 's/^ .* (.*) \\(.*\\); .*$/\\1/p'" :show *show-command-output*) :test #'equal)))
+  (let ((branch (git-current-branch))
+        (changelog-dist (remove "UNRELEASED" (get-changelog-distributions) :test #'equal)))
     (cond
       ((search "/" branch)
        (subseq branch (1+ (search "/" branch)) (length branch)))
@@ -41,10 +50,9 @@ branch with the name upstream/$distibution."
            (current-dist-p (item)
              (search dist item)))
       (let* ((deb-branch (debian-branch-p))
-             (branches (run/lines "git branch --no-color 2> /dev/null | cut -c 3-"))
+             (branches (git-list-branches))
              (upstream-branches (remove-if-not #'upstream-p branches))
              (current-dist (remove-if-not #'current-dist-p upstream-branches)))
-        (break)
         (cond
           ;; if there is a specialised branch for the current dist
           ;; then return it.
@@ -75,8 +83,9 @@ branch name if true."
          (merge-pathnames
           (make-pathname :directory '(:relative "debian"))
           (git-root)))
-    (run/ss "git branch --no-color 2> /dev/null | egrep '^\\*' | cut -c 3-")
-    (error "The current git repository isn't a Debian package.")))
+    (git-current-branch)
+    (error 'debian-package-error
+           :text "The current git repository isn't a Debian package.")))
 
 (defun get-debian (&optional dist)
   "Return the Debian branch based on a distribution.  This will look
@@ -86,7 +95,7 @@ for a branch with the name debian/$distribution or return master."
                (equal "master" item)))
          (current-dist-p (item)
            (search dist item)))
-  (let* ((branches (remove-if-not #'debian-p (run/lines "git branch --no-color 2> /dev/null | cut -c 3-")))
+  (let* ((branches (remove-if-not #'debian-p (git-list-branches)))
          (current-dist (remove-if-not #'current-dist-p branches)))
     (cond
       (current-dist current-dist)
@@ -101,6 +110,10 @@ for a branch with the name debian/$distribution or return master."
 (defun get-current-version ()
   (let ((changelog (parse-changelog)))
     (cdr (assoc :version changelog))))
+
+(defun get-package-source-name ()
+  (let ((changelog (parse-changelog)))
+    (cdr (assoc :source changelog))))
 
 (defun get-package-source-name ()
   (let ((changelog (parse-changelog)))

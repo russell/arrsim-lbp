@@ -31,6 +31,18 @@
    (run/ss '(git "rev-parse" "--show-toplevel")
            :show *show-command-output*)))
 
+(defun git-current-branch ()
+  "return the current branch."
+  (run/ss '(pipe
+            ("git" "branch" "--no-color")
+            ("sed" "-e" "/^[^*]/d" "-e" "s/* \\(.*\\)/\\1/"))))
+
+(defun git-list-branches ()
+  "return a list of the branches in the current repository."
+  (run/lines '(pipe
+               ("git" "branch" "--no-color")
+               ("cut" "-c" "3-"))))
+
 (defun git-recent-tag (&optional (branch "origin/master"))
   "get the most recent tag on the specified branch"
   (cl-ppcre:register-groups-bind (tag number rev)
@@ -57,3 +69,6 @@
     (concatenate 'string latest-tag "+" (getf commit-date :year)
                  (getf commit-date :month) (getf commit-date :day)
                  local-version)))
+
+(defun git-commit-all (message)
+  (run `(git 'commit "-am" ,message)))

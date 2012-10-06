@@ -24,7 +24,7 @@
 
 
 (defun buildpackage ()
-  (let* ((dist (get-release))
+  (let* ((dist (car (remove "UNRELEASED" (get-changelog-distributions) :test #'equal)))
          (upstream-branch (car (get-upstream)))
          (debian-branch (debian-branch-p)))
     (let ((environ (cons
@@ -42,7 +42,7 @@
 
 (defun git-new-version (version)
   "create a new change log version and set the target distribution"
-  (let* ((dist (get-release))
+  (let* ((dist (car (remove "UNRELEASED" (get-changelog-distributions) :test #'equal)))
          (debian-branch (debian-branch-p)))
     (run (list 'git 'dch
                "--debian-branch" debian-branch
@@ -86,6 +86,3 @@
           (run (list 'dch "-r" "Released new version."))
           debian-version)
         (print-error "Version ~A is older then current deb version ~A.~%" latest-version current-version))))
-
-(defun git-commit-all (message)
-  (run `(git 'commit "-am" ,message)))

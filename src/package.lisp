@@ -22,7 +22,13 @@
 
   (:nicknames :lbp)
 
-  (:use :cl :inferior-shell)
+  (:use :cl)
+
+  (:import-from #:inferior-shell
+                #:run
+                #:run/ss
+                #:run/lines
+                #:pipe)
 
   (:import-from #:cl-openstack
                 #:create-server
