@@ -18,6 +18,19 @@
 
 (in-package :arrsim-lbp)
 
+(defun git-repository-dirty ()
+  "raise a condition if the repository is dirty"
+  (run/lines '(git "diff" "--exit-code")
+             :show *show-command-output*
+             :on-error "There are uncommitted files in the repository."
+             ))
+
+(defun git-root ()
+  "return the root of the git repository."
+  (truename
+   (run/ss '(git "rev-parse" "--show-toplevel")
+           :show *show-command-output*)))
+
 (defun git-recent-tag (&optional (branch "origin/master"))
   "get the most recent tag on the specified branch"
   (cl-ppcre:register-groups-bind (tag number rev)

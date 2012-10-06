@@ -25,8 +25,8 @@
 
 (defun buildpackage ()
   (let* ((dist (get-release))
-         (upstream-branch (car (get-upstream dist)))
-         (debian-branch (car (get-debian dist))))
+         (upstream-branch (car (get-upstream)))
+         (debian-branch (debian-branch-p)))
     (let ((environ (cons
                     (format-string "ARCH=~A" *architecture*)
                     (cons
@@ -43,11 +43,11 @@
 (defun git-new-version (version)
   "create a new change log version and set the target distribution"
   (let* ((dist (get-release))
-         (debian-branch (car (get-debian dist))))
+         (debian-branch (debian-branch-p)))
     (run (list 'git 'dch
                "--debian-branch" debian-branch
                "-N" version) :show *show-command-output*)
-    (run (list 'dch :distribution  *distribution* "") :show *show-command-output*)))
+    (run (list 'dch :distribution  dist "") :show *show-command-output*)))
 
 (defun git-commit-version ()
   "Create a new release commit and tag the current commit."
@@ -56,9 +56,8 @@
     (run (list 'git 'tag (string-concat "debian/" debian-version)) :show *show-command-output*)))
 
 (defun git-merge-revision (ref upstream-version debian-version)
-  (let* ((dist (get-release))
-         (upstream-branch (car (get-upstream dist)))
-         (debian-branch (car (get-debian dist))))
+  (let* ((upstream-branch (car (get-upstream)))
+         (debian-branch (debian-branch-p)))
     (run (list 'git 'checkout upstream-branch) :show *show-command-output*)
     (run (list 'git 'merge ref) :show *show-command-output*)
     (run (list 'git 'tag (string-concat "upstream/" upstream-version)) :show *show-command-output*)

@@ -21,9 +21,10 @@
 
 (defun get-release ()
   "Get the current target distribution from the changelog.  If the
-current version is UNRELEASED then net released version will be returned."
+current version is UNRELEASED then next released version will be
+returned."
   (let ((branch (run/ss "git branch --no-color 2> /dev/null | sed -e '/^[^*]/d' -e 's/* \\(.*\\)/\\1/'"))
-        (changelog-dist (remove "UNRELEASED" (run/lines "dpkg-parsechangelog -c2 | sed -n 's/^ .* (.*) \\(.*\\); .*$/\\1/p'" :show t) :test #'equal)))
+        (changelog-dist (remove "UNRELEASED" (run/lines "dpkg-parsechangelog -c4 | sed -n 's/^ .* (.*) \\(.*\\); .*$/\\1/p'" :show *show-command-output*) :test #'equal)))
     (cond
       ((search "/" branch)
        (subseq branch (1+ (search "/" branch)) (length branch)))
@@ -31,24 +32,58 @@ current version is UNRELEASED then net released version will be returned."
        (car changelog-dist))
       (t "unstable"))))
 
-(defun get-upstream (&optional dist)
-  "Return the upstream branch based on a distribution.  This will look
-for a branch with the name upstream/$distribution."
-  (flet ((upstream-p (item)
-           (eq (search "upstream" item) 0))
-         (current-dist-p (item)
-           (search dist item)))
-  (let* ((branches (remove-if-not #'upstream-p (run/lines "git branch --no-color 2> /dev/null | cut -c 3-")))
-         (current-dist (remove-if-not #'current-dist-p branches)))
-    (cond
-      (current-dist current-dist)
-      (t branches)))))
+(defun get-upstream ()
+  "Return the upstream of the current branch.  This will look for a
+branch with the name upstream/$distibution."
+  (let ((dist (get-release)))
+    (flet ((upstream-p (item)
+             (eq (search "upstream" item) 0))
+           (current-dist-p (item)
+             (search dist item)))
+      (let* ((deb-branch (debian-branch-p))
+             (branches (run/lines "git branch --no-color 2> /dev/null | cut -c 3-"))
+             (upstream-branches (remove-if-not #'upstream-p branches))
+             (current-dist (remove-if-not #'current-dist-p upstream-branches)))
+        (break)
+        (cond
+          ;; if there is a specialised branch for the current dist
+          ;; then return it.
+          (current-dist current-dist)
+          ;; if the current branch name is debian and there is a branch
+          ;; titled upstream then pass it back.
+          ((and (equal deb-branch "debian")
+                (member "upstream" branches :test #'equal))
+           (member "upstream" branches :test #'equal))
+          (t upstream-branches))))))
+
+(defun directory-exists-p (directory)
+  "test to see if the directory exists"
+  (handler-case
+    (let ((directory (truename directory)))
+      (when
+          (equal (namestring directory)
+                 (directory-namestring directory))
+        directory))
+    (t nil)))
+
+;; XXX This should be renamed or abstracted out to a predicate that
+;; doesn't raise a condition.
+(defun debian-branch-p ()
+  "is the current checked out branch a Debian package.  Return the
+branch name if true."
+  (if (directory-exists-p
+         (merge-pathnames
+          (make-pathname :directory '(:relative "debian"))
+          (git-root)))
+    (run/ss "git branch --no-color 2> /dev/null | egrep '^\\*' | cut -c 3-")
+    (error "The current git repository isn't a Debian package.")))
 
 (defun get-debian (&optional dist)
   "Return the Debian branch based on a distribution.  This will look
-for a branch with the name debian/$distribution."
+for a branch with the name debian/$distribution or return master."
   (flet ((debian-p (item)
-           (eq (search "debian" item) 0))
+           (or (eq (search "debian" item) 0)
+               (equal "master" item)))
          (current-dist-p (item)
            (search dist item)))
   (let* ((branches (remove-if-not #'debian-p (run/lines "git branch --no-color 2> /dev/null | cut -c 3-")))

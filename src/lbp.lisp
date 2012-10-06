@@ -28,8 +28,7 @@
                         :key (lambda (i) (string-downcase (symbol-name (car i))))
                         :test #'equal)))
     (if command
-        (progn (funcall (caddr command))
-               (print command))
+        (progn (funcall (caddr command)))
         (progn
-          (print-error "ERROR: Invalid Command, ~A.~%" primary-command)
+          (print-error "ERROR: Invalid Command, ~A.~%" (or primary-command "none"))
           (print-usage)))))

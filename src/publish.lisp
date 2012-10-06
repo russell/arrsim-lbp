@@ -1,6 +1,6 @@
 ;;; -*- Mode: Lisp; Syntax: COMMON-LISP; Base: 10 -*-
 
-;; arrsim-lbp is a collection of packaging utilities
+;; arrsim-lbp is a tool to automate package building.
 ;; Copyright (C) 2012 Russell Sim <russell.sim@gmail.com>
 ;;
 ;; This program is free software: you can redistribute it and/or modify
