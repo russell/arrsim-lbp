@@ -26,6 +26,6 @@
     (when help
       (print-usage-summary "Usage:~%~@{~A~%~}"
                            '(((#\h "help") nil "Print this message.")))
-      (sb-ext:quit :unix-status 1))
+      (exit 1))
     (let ((free (cdr free)))            ; remove the command from the list
       (publish (car free)))))

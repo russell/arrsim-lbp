@@ -34,3 +34,6 @@
 
 (defun concat (&rest lists)
   (apply 'concatenate 'list lists))
+
+(defun exit (&optional (code 0))
+  (sb-ext:exit :code code))

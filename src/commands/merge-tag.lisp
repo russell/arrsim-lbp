@@ -28,7 +28,7 @@ changelog entry."
       (print-usage-summary "Usage:~%~@{~A~%~}"
                            '(((#\r "recent") nil "Use the most recent tag from a branch.")
                              ((#\h "help") nil "Print this message.")))
-      (sb-ext:quit :unix-status 1))
+      (exit 1))
     (let ((tag (if recent
                    (git-recent-tag "origin/master")
                    (cadr free)))

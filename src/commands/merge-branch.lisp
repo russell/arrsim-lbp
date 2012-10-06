@@ -28,7 +28,7 @@ changelog entry."
       (print-usage-summary "Usage:~%~@{~A~%~}"
                            '(((#\a "auto") nil "After merging, commit and tag.")
                              ((#\h "help") nil "Print this message.")))
-      (sb-ext:quit :unix-status 1))
+      (exit 1))
     (let ((branch (cdr free)))
       (let ((debian-version (git-merge-branch branch)))
         (if auto

@@ -22,11 +22,14 @@
 (defcommand info
     "Print the variables that will be used for the current execution."
   (with-cli-options ()
-    (help)
+    (help verbose)
     (when help
       (print-usage-summary "Usage:~%~@{~A~%~}"
-                           '(((#\h "help") nil "Print this message.")))
-      (sb-ext:quit :unix-status 1))
-    (printf "Debian Branch: ~A~%" (car (get-debian)))
+                           '(((#\v "verbose") nil "Verbose output.")
+                             ((#\h "help") nil "Print this message.")))
+      (exit 1))
+    (when verbose
+      (setq *show-command-output* t))
+    (printf "Debian Branch: ~A~%" (debian-branch-p))
     (printf "Upstream Branch: ~A~%" (car (get-upstream)))
     (printf "Current Version ~A~%" (get-current-version))))
