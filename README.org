@@ -18,9 +18,10 @@
    To change the current working directory of an existing SLIME
    session.
 #+BEGIN_SRC lisp
-(sb-posix:chdir "/home/russell/projects/packaging/rcportal/")
-(sb-posix:setenv "PWD" "/home/russell/projects/packaging/rcportal/" 1)
-(setf *default-pathname-defaults* #P"/home/russell/projects/packaging/rcportal/")
+(let ((dir "/home/russell/projects/packaging/rcportal/"))
+  (sb-posix:chdir dir)
+  (sb-posix:setenv "PWD" dir 1)
+  (setf *default-pathname-defaults* (pathname dir)))
 
 ; to test try getting the true name
 (truename ".")
