@@ -24,3 +24,13 @@
 
 (defmacro print-error (control-string &rest format-arguments)
   `(format *error-output* ,control-string ,@format-arguments))
+
+(defmacro format-string (control-string &rest format-arguments)
+  `(with-output-to-string (stream)
+     (format stream ,control-string ,@format-arguments)))
+
+(defun string-concat (&rest strings)
+  (apply 'concatenate 'string strings))
+
+(defun concat (&rest lists)
+  (apply 'concatenate 'list lists))

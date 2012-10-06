@@ -19,19 +19,6 @@
 
 (in-package :arrsim-lbp)
 
-(defmacro format-string (control-string &rest format-arguments)
-  `(with-output-to-string (stream)
-     (format stream ,control-string ,@format-arguments)))
-
-(defmacro print-error (control-string &rest format-arguments)
-  `(format *error-output* ,control-string ,@format-arguments))
-
-(defun string-concat (&rest strings)
-  (apply 'concatenate 'string strings))
-
-(defun concat (&rest lists)
-  (apply 'concatenate 'list lists))
-
 (defun get-release ()
   "Get the current target distribution from the changelog.  If the
 current version is UNRELEASED then net released version will be returned."
