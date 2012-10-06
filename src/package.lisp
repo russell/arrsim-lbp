@@ -35,6 +35,7 @@
 
   (:import-from #:unix-options
                 #:with-cli-options
+                #:free
                 #:print-usage-summary)
 
   (:export
