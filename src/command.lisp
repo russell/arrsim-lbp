@@ -42,6 +42,7 @@
       y))
 
 (defun greatest (list &optional (test #'>))
+  "Find the greatest member of the list."
   (reduce (lambda (x y)
             (greater x y test))
           list))
@@ -55,6 +56,7 @@
                                        *commands*))))
 
 (defun split-string (string)
+  "Split a string on spaces and newline characters."
   (loop :for i = 0 :then (1+ j)
         :as positions = (remove-if (lambda (l) (eq nil l))
                                    (list (position #\Space string :start i)
@@ -64,6 +66,9 @@
         :while j))
 
 (defun command-spec-to-string (command &optional (desc-offset 50))
+  "Return a formatted string for one command.  DESC-OFFSET can be used
+to specify the length of the longest command so that the correct
+justification can be applied."
   (format nil (format nil "  ~A~~~A,2T~A"
                       "~A"
                       (+ desc-offset 4)
