@@ -36,4 +36,4 @@
   (apply 'concatenate 'list lists))
 
 (defun exit (&optional (code 0))
-  (sb-ext:exit :code code))
+  (sb-ext:quit :unix-status code))
