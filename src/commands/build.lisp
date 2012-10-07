@@ -21,8 +21,8 @@
 
 (defcommand build
     "Build a new package using the current version."
-  (with-cli-options (verbose)
-    (help)
+  (with-cli-options ()
+    (help verbose)
     (when help
       (print-usage-summary "Usage:~%~@{~A~%~}"
                            '(((#\h "help") nil "Print this message.")))
