@@ -23,12 +23,14 @@
     "Merge a tag with the current Debian version and generate a new
 changelog entry."
   (with-cli-options ()
-    (help recent)
+    (help recent verbose)
     (when help
       (print-usage-summary "Usage:~%~@{~A~%~}"
                            '(((#\r "recent") nil "Use the most recent tag from a branch.")
                              ((#\h "help") nil "Print this message.")))
       (exit 1))
+    (when verbose
+      (setq *show-command-output* t))
     (let ((tag (if recent
                    (git-recent-tag "origin/master")
                    (cadr free)))
