@@ -45,11 +45,14 @@
 
 (defun git-recent-tag (&optional (branch "origin/master"))
   "get the most recent tag on the specified branch"
-  (cl-ppcre:register-groups-bind (tag number rev)
-      ("^(.+)-(\\d+)-(.+)$"
-       (car (run/lines `(git "describe" ,branch) :show *show-command-output*))
-       :sharedp t)
-    tag))
+  (let ((latest-tag (car (run/lines `(git "describe" ,branch)
+                                    :show *show-command-output*))))
+    (or (cl-ppcre:register-groups-bind (tag number rev)
+            ("^(.+)-(\\d+)-(.+)$"
+             latest-tag
+             :sharedp t)
+          tag)
+        latest-tag)))
 
 (defun git-latest-commit-date (&optional (branch "origin/master"))
   "get the latest commit date"
