@@ -32,4 +32,6 @@
       (setq *show-command-output* t))
     (printf "Debian Branch: ~A~%" (debian-branch-p))
     (printf "Upstream Branch: ~A~%" (car (get-upstream)))
+    (printf "Distribution: ~A~%" (car (remove "UNRELEASED" (get-changelog-distributions) :test #'equal)))
+    (printf "Architecture: ~A~%" *architecture*)
     (printf "Current Version ~A~%" (get-current-version))))

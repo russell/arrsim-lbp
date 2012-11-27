@@ -23,12 +23,14 @@
     "Merge a branch with the current Debian version and generate a new
 changelog entry."
   (with-cli-options ()
-                    (help auto)
+                    (help auto verbose)
     (when help
       (print-usage-summary "Usage:~%~@{~A~%~}"
                            '(((#\a "auto") nil "After merging, commit and tag.")
                              ((#\h "help") nil "Print this message.")))
       (exit 1))
+    (when verbose
+      (setq *show-command-output* t))
     (let ((branch (cdr free)))
       (let ((debian-version (git-merge-branch branch)))
         (git-repository-dirty)

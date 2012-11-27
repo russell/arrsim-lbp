@@ -22,10 +22,12 @@
 (defcommand build
     "Build a new package using the current version."
   (with-cli-options ()
-    (help)
+    (help verbose)
     (when help
       (print-usage-summary "Usage:~%~@{~A~%~}"
                            '(((#\h "help") nil "Print this message.")))
       (exit 1))
+    (when verbose
+      (setq *show-command-output* t))
     (git-repository-dirty)
     (buildpackage)))
