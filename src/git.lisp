@@ -51,6 +51,7 @@
             ("^(.+)-(\\d+)-(.+)$"
              latest-tag
              :sharedp t)
+          (declare (ignore number rev))
           tag)
         latest-tag)))
 
