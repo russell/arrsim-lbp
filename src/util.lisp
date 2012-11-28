@@ -37,3 +37,12 @@
 
 (defun exit (&optional (code 0))
   (sb-ext:quit :unix-status code))
+
+(defmacro with-environment ((symbol &rest environment-variables) &body body)
+  "Add a list of keyword value ENVIRONMENT-VARIABLES to the standard
+environment and bind them to the SYMBOL."
+  (let ((sym (gensym)))
+    `(let* ((,sym (loop :for (key value) :on ,(cons 'list environment-variables) :by #'cddr
+                             :collect (format-string "~A=~S" key value)))
+            (,symbol (concatenate 'list ,sym (sb-ext:posix-environ))))
+       ,@body)))

@@ -27,11 +27,7 @@
   (let* ((dist (car (remove "UNRELEASED" (get-changelog-distributions) :test #'equal)))
          (upstream-branch (car (get-upstream)))
          (debian-branch (debian-branch-p)))
-    (let ((environ (cons
-                    (format-string "ARCH=~A" *architecture*)
-                    (cons
-                     (format-string "DIST=~A" dist)
-                     (sb-ext:posix-environ)))))
+    (with-environment (environ :arch *architecture* :dist dist)
       (sb-ext:run-program "git-buildpackage"
                           (list "-sa"
                                 "--git-ignore-branch"
@@ -39,6 +35,19 @@
                                 (format-string "--git-debian-branch=~S" debian-branch))
                           :environment environ
                           :wait t :search t :input t :output t))))
+
+(defun pbuilder (args)
+  (let* ((dist (car (remove "UNRELEASED" (get-changelog-distributions) :test #'equal))))
+    (with-environment (environ :arch *architecture* :dist dist)
+      (sb-ext:run-program "git-pbuilder" args
+                          :environment environ
+                          :wait t :search t :input t :output t))))
+(defun login ()
+  (pbuilder "login"))
+
+(defun update ()
+  (pbuilder "update"))
+
 
 (defun git-new-version (version)
   "create a new change log version and set the target distribution"
