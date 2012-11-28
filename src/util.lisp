@@ -43,6 +43,6 @@
 environment and bind them to the SYMBOL."
   (let ((sym (gensym)))
     `(let* ((,sym (loop :for (key value) :on ,(cons 'list environment-variables) :by #'cddr
-                             :collect (format-string "~A=~S" key value)))
+                             :collect (format-string "~A=~A" key value)))
             (,symbol (concatenate 'list ,sym (sb-ext:posix-environ))))
        ,@body)))
