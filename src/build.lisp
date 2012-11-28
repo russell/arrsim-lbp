@@ -36,7 +36,7 @@
                           :environment environ
                           :wait t :search t :input t :output t))))
 
-(defun pbuilder (args)
+(defun pbuilder (&rest args)
   (let* ((dist (car (remove "UNRELEASED" (get-changelog-distributions) :test #'equal))))
     (with-environment (environ :arch *architecture* :dist dist)
       (sb-ext:run-program "git-pbuilder" args
