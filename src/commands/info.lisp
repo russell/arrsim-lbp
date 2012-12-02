@@ -34,4 +34,4 @@
     (printf "Upstream Branch: ~A~%" (car (get-upstream)))
     (printf "Distribution: ~A~%" (car (remove "UNRELEASED" (get-changelog-distributions) :test #'equal)))
     (printf "Architecture: ~A~%" *architecture*)
-    (printf "Current Version ~A~%" (get-current-version))))
+    (printf "Current Version: ~A~%" (get-current-version))))
