@@ -69,7 +69,7 @@
   (let* ((upstream-branch (car (get-upstream)))
          (debian-branch (debian-branch-p)))
     (run (list 'git 'checkout upstream-branch) :show *show-command-output*)
-    (run (list 'git 'merge ref) :show *show-command-output*)
+    (run (list 'git 'merge :no-edit ref) :show *show-command-output*)
     (run (list 'git 'tag (string-concat "upstream/" upstream-version)) :show *show-command-output*)
     (run (list 'git 'checkout debian-branch) :show *show-command-output*)
     (run (list 'git 'merge :no-edit upstream-branch) :show *show-command-output*)
