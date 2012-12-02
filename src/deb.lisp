@@ -102,6 +102,7 @@ for a branch with the name debian/$distribution or return master."
       (t branches)))))
 
 (defun parse-changelog ()
+  ;; TODO(RS) this should be run in the root dir of the package.
   (loop :for line :in (run/lines "dpkg-parsechangelog")
      :until (search "Changes:" line)
      :collect (cons (intern (string-upcase (subseq line 0 (search ": " line))) :keyword)
