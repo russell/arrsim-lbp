@@ -24,7 +24,7 @@
 
 
 (defun buildpackage ()
-  (let* ((dist (car (remove "UNRELEASED" (get-changelog-distributions) :test #'equal)))
+  (let* ((dist (car (deb-released-version)))
          (upstream-branch (car (get-upstream)))
          (debian-branch (debian-branch-p)))
     (with-environment (environ :arch *architecture* :dist dist)
@@ -37,7 +37,7 @@
                           :wait t :search t :input t :output t))))
 
 (defun pbuilder (&rest args)
-  (let* ((dist (car (remove "UNRELEASED" (get-changelog-distributions) :test #'equal))))
+  (let* ((dist (car (deb-released-version))))
     (with-environment (environ :arch *architecture* :dist dist)
       (sb-ext:run-program "git-pbuilder" args
                           :environment environ
@@ -52,7 +52,7 @@
 
 (defun git-new-version (version)
   "create a new change log version and set the target distribution"
-  (let* ((dist (car (remove "UNRELEASED" (get-changelog-distributions) :test #'equal)))
+  (let* ((dist (car (deb-released-version)))
          (debian-branch (debian-branch-p)))
     (run (list 'git 'dch
                "--debian-branch" debian-branch

@@ -22,18 +22,21 @@
 (define-condition debian-package-error (error)
   ((text :initarg :text :reader text)))
 
-(defun get-changelog-distributions (&optional (number 4))
+(defun changelog-distributions (&optional (number 4))
   (run/lines `(pipe
                ("dpkg-parsechangelog" ,(string-concat "-c" (write-to-string number)))
                ("sed" "-n" "s/^ .* (.*) \\(.*\\); .*$/\\1/p"))
              :show *show-command-output*))
+
+(defun deb-released-version ()
+  (remove "UNRELEASED" (changelog-distributions) :test #'equal))
 
 (defun get-release ()
   "Get the current target distribution from the changelog.  If the
 current version is UNRELEASED then next released version will be
 returned."
   (let ((branch (git-current-branch))
-        (changelog-dist (remove "UNRELEASED" (get-changelog-distributions) :test #'equal)))
+        (changelog-dist (deb-released-version)))
     (cond
       ((search "/" branch)
        (subseq branch (1+ (search "/" branch)) (length branch)))
