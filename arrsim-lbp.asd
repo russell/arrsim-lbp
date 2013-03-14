@@ -19,6 +19,7 @@
 
 (defsystem :arrsim-lbp
   :depends-on (:asdf :inferior-shell :cl-openstack :cl-ppcre :unix-options :trivial-backtrace)
+  :defsystem-depends-on (:asdf)
   :description "Debian package management scripts"
   :components ((:static-file "arrsim-lbp.asd")
                (:module "src"
